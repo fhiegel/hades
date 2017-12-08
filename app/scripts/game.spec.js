@@ -26,7 +26,9 @@ describe('A Game', () => {
 	})
 	
 	it('is won when a player meets victory conditions', () => {
-		let game = aGameWithTwoPlayers().isWonWhen(player => player.name.startsWith('P1')).starts()
+		let game = aGameWithTwoPlayers()
+			.isWonWhen(player => player == p1)
+			.starts()
 		
 		jest.runTimersToTime(15)
 		
@@ -35,13 +37,37 @@ describe('A Game', () => {
 	})
 	
 	it('is won by multiple players when both meets victory conditions', () => {
-		let game = aGameWithTwoPlayers().isWonWhen(player => player.name.startsWith('P')).starts()
+		let game = aGameWithTwoPlayers()
+			.isWonWhen(player => player.name.startsWith('P'))
+			.starts()
 		
 		jest.runTimersToTime(15)
 		
 		expect(game.running).toBeFalsy()
 		expect(game.state.winners).toContain(p1)
 		expect(game.state.winners).toContain(p2)
+	})
+
+	it('is lost when a player meets defeat conditions', () => {
+		let game = aGameWithTwoPlayers()
+			.isLostWhen(player => player == p1)
+			.starts()
+		
+		jest.runTimersToTime(15 * 2)
+		
+		expect(game.state.loosers).toContain(p1)
+	})
+
+	it('is lost when a player meets defeat conditions and victory conditions', () => {
+		let game = aGameWithTwoPlayers()
+			.isWonWhen(player => player == p1)
+			.isLostWhen(player => player == p1)
+			.starts()
+		
+		jest.runTimersToTime(15 * 2)
+		
+		expect(game.state.winners).not.toContain(p1)
+		expect(game.state.loosers).toContain(p1)
 	})
 
 })
